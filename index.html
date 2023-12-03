@@ -9,8 +9,6 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&amp;subset=cyrillic" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i|Tinos:400,400i&amp;subset=cyrillic"
           rel="stylesheet">
-    <script type="text/javascript" src="/shared/3rdparty/jquery/jquery.js" language="javascript1.1"></script>
-    <script src="index.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -112,6 +110,8 @@
     </style>
 </head>
 <body>
+<audio class="audioHp" src="sounds/hp.mp3"></audio>
+<audio class="audioSw" src="sounds/sw.mp3"></audio>
 <h1>Игровое поле</h1>
 <div class="field-box">
     <div class="field"></div>
@@ -120,106 +120,73 @@
 <!--h1>Инвентарь</h1>
 <div class="inventory-box"><div class="inventory"></div></div-->
 
-<script>
+<script type="module">
+    import {Gamer} from "./player.js"
+    import {Enemy} from "./enemy.js";
+
     const gameZone = document.querySelector('.field')
     const locationMap = [
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-        [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+        [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-
-
+        
     ]
 
-    let player = {
-        x: 50,
-        y: 50,
-        character: document.createElement('div')
-    }
-    player.character.style.top = player.y + 'px'
-    player.character.style.left = player.x + 'px'
 
 
     function Game() {
         this.init = function () {
         }
 
-        this.play = function () {
-            player.character.classList.add('tile')
-            player.character.classList.add('tileP')
-            gameZone.appendChild(player.character)
-        }
+        // this.play = function () {
+        //     player.character.classList.add('tile')
+        //     player.character.classList.add('tileP')
+        //     gameZone.appendChild(player.character)
+        // }
 
-        this.controller = function () {
-            let yCount = 1
-            let xCount = 1
 
-            document.addEventListener('keydown', (e) => {
-                switch (e.keyCode) {
-                    case 87: //w
-                       if (!locationMap[yCount -1][xCount]){
-						   player.character.style.top = `${player.y -= 50}px`
-						   yCount-=1
-					   }
+        const player = new Gamer(gameZone, locationMap)
+        player.controller()
 
-                        break
-                    case  83://s
-							if(!locationMap[yCount+1][xCount]){
-                        		player.character.style.top = `${player.y += 50}px`
-								yCount +=1
-							}
-                        break
-                    case 65:///a
-							if(!locationMap[yCount][xCount -1]){
-								player.character.style.left = `${player.x -= 50}px`
-								xCount-=1
-							}
 
-                        break
-                    case 68://d
-                       if (!locationMap[yCount][xCount+1]){
-						   player.character.style.left = `${player.x += 50}px`
-						   xCount += 1
-					   }
-                }
+        const enemy = new Enemy(14, 3, gameZone)
 
-            })
-        }
-
-        this.render = function () {
+        this.render = function (map) {
             let x = 0
             let y = 0
-            game.controller()
-            for (let i = 0; i < locationMap.length; i++) {
 
-                for (let b = 0; b < locationMap[i].length; b++) {
+            for (let i = 0; i < map.length; i++) {
 
-                    if (locationMap[i][b] === 0) {
-                        const element = document.createElement('div')
-                        element.classList.add('tile')
-                        element.style.top = y + 'px'
-                        element.style.left = x + 'px'
-                        gameZone.appendChild(element)
-                        x += 50
-                    }
-                    if (locationMap[i][b] === 1) {
-                        const element = document.createElement('div')
-                        element.classList.add('tile')
+                for (let j = 0; j < map[i].length; j++) {
+
+                    const element = document.createElement('div')
+                    element.classList.add('tile')
+
+                    if (map[i][j] === 1) {
                         element.classList.add('tileW')
-                        element.style.top = y + 'px'
-                        element.style.left = x + 'px'
-                        gameZone.appendChild(element)
-                        x += 50
                     }
+                    if (map[i][j] === 2) {
+                        element.classList.add('tileSW')
+                    }
+                    if (map[i][j] === 3) {
+                        element.classList.add('tileHP')
+                    }
+
+                    element.classList.add(`c${j}-${i}`)
+                    element.style.top = y + 'px'
+                    element.style.left = x + 'px'
+                    gameZone.appendChild(element)
+                    x += 50
                 }
 
                 x = 0
@@ -233,8 +200,8 @@
 
     var game = new Game();
     game.init();
-    game.render()
-    game.play()
+    game.render(locationMap)
+
 
 
 </script>
